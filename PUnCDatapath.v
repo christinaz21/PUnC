@@ -8,7 +8,7 @@
 
 `define PC_ADD	1'b0
 `define BASE_R	1'b1
-
+ 
 `define PC_addr 2'b00
 `define PC_ALU_addr 2'b01
 `define PC_store_addr 2'b10
@@ -66,11 +66,12 @@ module PUnCDatapath(
 	input N_ld,
 	input Z_ld,
 	input P_ld,
-	input store_ld, //DIDN'T CAPITALIZE
+	input wire [15:0] store,
+	input store_ld //DIDN'T CAPITALIZE
 
-	output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	output IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	output wire [15:0] RF_data //IS TYPE RIGHT
+	// output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
+	// output IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
+	// output wire [15:0] RF_data //IS TYPE RIGHT
 );
 
 	// Local Registers
@@ -129,12 +130,32 @@ module PUnCDatapath(
 
 	always @(posedge clk) begin // check over what is clk triggered, whats not
 		// PC data select mux
-		if (PC_data_sel == PC_ADD) begin // why doesn't condition work
-			pc = add_output; // haven't set this yet
+		case (PC_data_sel)
+			`PC_ADD: begin
+				pc = add_output;
+			end
+			`BASE_R: begin
+				pc = RF_data;
+			end
+		endcase
+
+		// Mem read/write address
+		if (PC_ld == 1) begin
+			case (addr_MEM_sel)
+				`PC_addr: begin
+					memAddrMux = pc;
+				end
+				`PC_ALU_addr: begin
+					memAddrMux = RF_data;
+				end
+				`PC_store_addr: begin	
+					memAddrNux = store;
+				end
+			endcase
 		end
-		if (PC_data_set == BASE_R) begin
-			pc = RF_data; // prob wrong
-		end
+		
+		
+		
 	end
 
 	always @(*) begin //do the muxes go here or in the other
