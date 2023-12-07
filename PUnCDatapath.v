@@ -66,12 +66,11 @@ module PUnCDatapath(
 	input N_ld,
 	input Z_ld,
 	input P_ld,
-	input wire [15:0] store,
-	input store_ld //DIDN'T CAPITALIZE
+	input store_ld, //DIDN'T CAPITALIZE
 
 	// output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
 	// output IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	// output wire [15:0] RF_data //IS TYPE RIGHT
+	output reg [15:0] RF_data //IS TYPE RIGHT
 );
 
 	// Local Registers
@@ -84,6 +83,7 @@ module PUnCDatapath(
 	wire [15:0] rd0RF;
 	reg  [15:0] RFdataMux;
 	reg  [15:0] add_output;
+	reg  [15:0] store;
 	// Assign PC debug net
 	assign pc_debug_data = pc;
 
@@ -149,7 +149,7 @@ module PUnCDatapath(
 					memAddrMux = RF_data;
 				end
 				`PC_store_addr: begin	
-					memAddrNux = store;
+					memAddrMux = store;
 				end
 			endcase
 		end
