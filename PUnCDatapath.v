@@ -29,6 +29,11 @@
 `define NZP_ALU_RESULT 1'b0
 `define NZP_MEM_DATA   1'b1
 
+`define ADD_op 2'b00
+`define AND_op 2'b01
+`define PASS_A_op 2'b10
+`define NOT_op 2'b11
+
 module PUnCDatapath(
 	// External Inputs
 	input  wire        clk,            // Clock
@@ -132,7 +137,7 @@ module PUnCDatapath(
 	//----------------------------------------------------------------------
 	// Add all other datapath logic here
 	//----------------------------------------------------------------------
-
+	// use non-blockinh assignment in here
 	always @(posedge clk) begin // check over what is clk triggered, whats not
 		// PC data select mux
 		case (PC_data_sel)
@@ -211,6 +216,49 @@ module PUnCDatapath(
 				cmp_input = rd0RF;
 			end
 		endcase
+
+		// NZP comparator
+		if(cmp_input < 0 && N_ld) begin //is the signededness right?
+			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
+		end
+		if(cmp_input == 0 && Z_ld) begin //is the signededness right?
+			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
+		end
+		if(cmp_input > 0 && P_ld) begin //is the signededness right?
+			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
+		end
+
+		// ALU
+		case (ALU_sel)
+			`AND_op: begin
+				RF_data = ALU_A & ALU_B;
+			end
+			`ADD_op: begin
+				RF_data = ALU_A + ALU_B;
+			end
+			`PASS_A_op: begin
+				RF_data = ALU_A;
+			end
+			`NOT_op: begin
+				RF_data = !(ALU_A);
+			end
+		endcase
+
+		if(store_ld == 1) begin
+			store = RF_data;
+		end
+
+		// PC incrementing
+		if(PC_inc == 1) begin
+			pc <= pc + 1;
+		end
+		if(PC_clr == 1) begin
+			pc <= 0;
+		end
+		
+		if(IR_ld) begin
+			
+		end
 
 	end
 
