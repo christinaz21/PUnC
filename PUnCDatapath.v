@@ -23,7 +23,7 @@
 `define ALU_PC 1'b0
 `define ALU_RF_0_DATA 1'b1
 
-`define ALU_r_data_1_RF 1'b0
+`define ALU_RF_1_DATA 1'b0
 `define ALU_sext 1'b1
 
 `define NZP_ALU_RESULT 1'b0
@@ -84,6 +84,9 @@ module PUnCDatapath(
 	reg  [15:0] RFdataMux;
 	reg  [15:0] add_output;
 	reg  [15:0] store;
+	reg  [15:0] ALU_A;
+	reg  [15:0] ALU_B;
+
 	// Assign PC debug net
 	assign pc_debug_data = pc;
 
@@ -154,6 +157,41 @@ module PUnCDatapath(
 			endcase
 		end
 		
+		// RF w data selector mux
+		case (w_RF_sel)
+			`PC_DATA: begin
+				RFdataMux = pc;
+			end
+			`MEM_DATA: begin
+				RFdataMux = memAddrMux;
+			end
+			`ALU_DATA: begin
+				RFdataMux = RF_data;
+			end
+		endcase
+
+		// ALU A mux 
+		case (A_sel)
+			`ALU_PC: begin
+				ALU_A = pc;
+			end
+			`ALU_RF_0_DATA: begin
+				ALU_A = rd0RF;
+			end
+		endcase
+
+		// ALU B mux
+		case (B_sel)
+			`ALU_RF_1_DATA: begin
+				ALU_B = rd1RF;
+			end
+			`ALU_sext: begin
+				ALU_B = sext_data; //SEXT THE DATA?
+			end
+		endcase
+
+
+
 		
 		
 	end
