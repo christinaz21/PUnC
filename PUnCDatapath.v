@@ -86,7 +86,7 @@ module PUnCDatapath(
 	reg  [15:0] store;
 	reg  [15:0] ALU_A;
 	reg  [15:0] ALU_B;
-
+	reg  [15:0] cmp_input;
 	// Assign PC debug net
 	assign pc_debug_data = pc;
 
@@ -142,6 +142,16 @@ module PUnCDatapath(
 			end
 		endcase
 
+		// Calculating PC_ADD
+		case(PC_add_sel)
+			`PCoffset11: begin
+				add_output = pc + IR[10:0] - 1; //SEXT THIS
+			end
+			`PCoffset9: begin
+				add_output = pc + IR[8:0] - 1; //SEXT THIS
+			end
+		endcase
+
 		// Mem read/write address
 		if (PC_ld == 1) begin
 			case (addr_MEM_sel)
@@ -189,11 +199,17 @@ module PUnCDatapath(
 				ALU_B = sext_data; //SEXT THE DATA?
 			end
 		endcase
-
-
-
 		
-		
+		// NZP mux
+		case (NZP_sel)
+			`NZP_ALU_RESULT: begin
+				cmp_input = RF_data;
+			end
+			`NZP_MEM_DATA: begin
+				cmp_input = rd0RF;
+			end
+		endcase
+
 	end
 
 	always @(*) begin //do the muxes go here or in the other
