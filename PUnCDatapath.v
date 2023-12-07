@@ -92,8 +92,10 @@ module PUnCDatapath(
 	reg  [15:0] ALU_A;
 	reg  [15:0] ALU_B;
 	reg  [15:0] cmp_input;
+	wire [15:0] sext11;
 	// Assign PC debug net
 	assign pc_debug_data = pc;
+	assign sext11 = {{5{IR[10]}}, IR[10:0]};
 
 
 	//----------------------------------------------------------------------
@@ -162,7 +164,7 @@ module PUnCDatapath(
 		// Calculating PC_ADD
 		case(PC_add_sel)
 			`PCoffset11: begin
-				add_output = pc + IR[10:0] - 1; //SEXT THIS
+				add_output = sext11;
 			end
 			`PCoffset9: begin
 				add_output = pc + IR[8:0] - 1; //SEXT THIS
