@@ -135,15 +135,27 @@ module PUnCDatapath(
 	//----------------------------------------------------------------------
 	// Add all other datapath logic here
 	//----------------------------------------------------------------------
-	// use non-blockinh assignment in here
-	always @(posedge clk) begin // check over what is clk triggered, whats not
-		// PC data select mux
-		case (PC_data_sel)
+	wire  [15:0] pc_ld_data;
+	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output :
+				       (PC_data_sel == `BASE_R) ? RF_data;
+
+	/* case (PC_data_sel)
 			`PC_ADD: begin
 				pc = add_output;
 			end
 			`BASE_R: begin
 				pc = RF_data;
+			end
+		endcase */
+	// use non-blockinh assignment in here
+	always @(posedge clk) begin // check over what is clk triggered, whats not
+		// PC data select mux
+		case (PC_data_sel)
+			`PC_ADD: begin
+				pc <= add_output;
+			end
+			`BASE_R: begin
+				pc <= RF_data;
 			end
 		endcase
 
