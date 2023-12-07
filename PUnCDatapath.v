@@ -138,8 +138,8 @@ module PUnCDatapath(
 	// Add all other datapath logic here
 	//----------------------------------------------------------------------
 	wire  [15:0] pc_ld_data;
-	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output :
-				       (PC_data_sel == `BASE_R) ? RF_data;
+	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output : RF_data ;
+	// assign reg_ext_9 = {{7{reg[8]}},  reg[8:0] };
 
 	/* case (PC_data_sel)
 			`PC_ADD: begin
@@ -151,6 +151,10 @@ module PUnCDatapath(
 		endcase */
 	// use non-blockinh assignment in here
 	always @(posedge clk) begin // check over what is clk triggered, whats not
+		if(PC_ld == 1) begin
+			pc <= pc_ld_data;
+		end
+		// set registers in here (like IR)
 		// PC data select mux
 		case (PC_data_sel)
 			`PC_ADD: begin
@@ -274,8 +278,8 @@ module PUnCDatapath(
 
 	end
 
-	always @(*) begin //do the muxes go here or in the other
+	/*always @(*) begin //do the muxes go here or in the other
 		
-	end
+	end*/
 
 endmodule
