@@ -56,17 +56,29 @@ module PUnCControl(
 	// Next State Combinational Logic
 	always @( * ) begin
 		// Set default value for next state here
-		// next_state = state;
+		next_state = state;
 
 		// Add your next-state logic here
-		//case (state)
-		//	STATE_FETCH: begin
-		//		next_state = decode; 
-		//	end
-		//in decode decide whether execute or halt
-		//in execute see if second stage or back to fetch
-		//second execute go back to fetch
-		//endcase
+		case (state)
+			STATE_FETCH: begin
+				next_state = STATE_DECODE; 
+			end
+			STATE_DECODE: begin
+				next_state = STATE_EXECUTE_1; 
+				// check if opcode is halt then go to halt
+			end
+			STATE_EXECUTE_1: begin
+				next_state = STATE_FETCH; 
+				//in execute see if second stage or back to fetch
+			end
+			STATE_EXECUTE_2: begin
+				next_state = STATE_FETCH;
+			end
+			// Do you even need to have this
+			STATE_HALT: begin
+				next_state = state;
+			end
+		endcase
 	end
 
 	// State Update Sequential Logic
