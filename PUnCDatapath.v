@@ -74,7 +74,7 @@ module PUnCDatapath(
 	input store_ld, //DIDN'T CAPITALIZE
 
 	// output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	// output IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
+	output reg [15:0] IR_to_controller, // WHY IS THIS LOCAL AND NOT AN OUTPUT
 	output reg [15:0] RF_data //IS TYPE RIGHT
 );
 
@@ -83,10 +83,13 @@ module PUnCDatapath(
 	reg  [15:0] ir;
 
 	// Declare other local wires and registers here
+	wire  [15:0] pc_ld_data;
+	wire  [15:0] instruction;
 	wire  [15:0] memAddrMux; // changed from reg to wire
-	wire [15:0] rd1RF;
-	wire [15:0] rd0RF;
+	wire  [15:0] rd1RF;
+	wire  [15:0] rd0RF;
 	wire  [15:0] RFdataMux;
+	wire  [15:0] rd0MEM;
 	reg  [15:0] add_output;
 	reg  [15:0] store;
 	wire  [15:0] ALU_A;
@@ -112,7 +115,7 @@ module PUnCDatapath(
 		.w_addr   (memAddrMux),
 		.w_data   (rd1RF),
 		.w_en     (w_en_MEM),
-		.r_data_0 (mem_debug_addr),
+		.r_data_0 (rd0MEM), // used to be mem_debug_addr idk why
 		.r_data_1 (mem_debug_data)
 	);
 
@@ -138,7 +141,6 @@ module PUnCDatapath(
 	//----------------------------------------------------------------------
 	// Add all other datapath logic here
 	//----------------------------------------------------------------------
-	wire  [15:0] pc_ld_data;
 	// assign LEFT_SIDE_OF_= (selector == first define) ? RH 1 : RH 2;
 	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output : RF_data ;
 	// assign reg_ext_9 = {{7{reg[8]}},  reg[8:0] };
@@ -148,7 +150,7 @@ module PUnCDatapath(
 	assign memAddrMux = (addr_MEM_sel == `PC_addr) ? pc :
 						(addr_MEM_sel == `PC_ALU_addr) ? RF_data : store; // can you just say store as second
 	assign RFdataMux = (w_RF_sel == `PC_DATA) ? pc : 
-						(w_RF_sel == `MEM_DATA) ? memAddrMux : RF_data;
+						(w_RF_sel == `MEM_DATA) ? rd0MEM : RF_data; // rd0MEM used to be memAddrMux idk why
 	assign ALU_A = (A_sel == `ALU_PC) ? pc : rd0RF;
 	assign ALU_B = (B_sel == `ALU_RF_1_DATA) ? rd1RF : sext_data; //sext the data here too?
 	assign cmp_input = (NZP_sel == `NZP_ALU_RESULT) ? RF_data : rd0RF;
@@ -161,9 +163,20 @@ module PUnCDatapath(
 		if(PC_ld == 1) begin
 			pc <= pc_ld_data;
 		end
+		if(PC_clr == 1) begin
+			pc <= 0;
+		end
+		if(PC_inc == 1) begin
+			pc <= pc + 1;
+		end
+		if(IR_ld) begin
+			ir <= rd0MEM;
+			IR_to_controller <= ir;
+		end
 		// set registers in here (like IR)
 	
 		// NZP comparator
+		// I think we have to use $signed() here
 		if(cmp_input < 0 && N_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
 		end
@@ -175,18 +188,6 @@ module PUnCDatapath(
 		end
 		if(store_ld == 1) begin
 			store = RF_data;
-		end
-
-		// PC incrementing
-		if(PC_inc == 1) begin
-			pc <= pc + 1;
-		end
-		if(PC_clr == 1) begin
-			pc <= 0;
-		end
-		
-		if(IR_ld) begin
-			
 		end
 
 	end

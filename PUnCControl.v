@@ -15,24 +15,40 @@ module PUnCControl(
 
 	// FSM States
 	// Add your FSM State values as localparams here
-	// localparam STATE_FETCH     = X'd0;
+	localparam STATE_FETCH     = 3'd0;
+	localparam STATE_DECODE		= 3'd1;
+	localparam STATE_EXECUTE_1	= 3'd2;
+	localparam STATE_EXECUTE_2 	= 3'd3;
+	localparam STAET_HALT		= 3'd4; // is it supposed to be 2'd3 idk how decimal works
 	
 	// fetch, decode, execute, halt
 
 	// State, Next State
-	// reg [X:0] state, next_state;
-	ir[`OC]
+	reg [2:0] state, next_state;
+	// ir[`OC]
 	// Output Combinational Logic
 	always @( * ) begin
 		// Set default values for outputs here (prevents implicit latching)
 
 		// Add your output logic here
-		//case (state)
-		//	STATE_FETCH: begin
+		case (state)
+			STATE_FETCH: begin
+				
+			end
+			STATE_DECODE: begin
+
+			end
+			STATE_EXECUTE: begin
+
+			end
+			STATE_HALT: begin
+
+			end
+		endcase
 		//
 		//	end
-			STATE_EXECUTE: begin
-				case()
+		//	STATE_EXECUTE: begin
+		//		case()
 
 		//endcase
 	end
