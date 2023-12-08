@@ -83,19 +83,20 @@ module PUnCDatapath(
 	reg  [15:0] ir;
 
 	// Declare other local wires and registers here
-	reg  [15:0] memAddrMux;
+	wire  [15:0] memAddrMux; // changed from reg to wire
 	wire [15:0] rd1RF;
 	wire [15:0] rd0RF;
-	reg  [15:0] RFdataMux;
+	wire  [15:0] RFdataMux;
 	reg  [15:0] add_output;
 	reg  [15:0] store;
-	reg  [15:0] ALU_A;
-	reg  [15:0] ALU_B;
-	reg  [15:0] cmp_input;
+	wire  [15:0] ALU_A;
+	wire  [15:0] ALU_B;
+	wire  [15:0] cmp_input;
 	wire [15:0] sext11;
+	wire [15:0] ALU_output; // Made a new wire
 	// Assign PC debug net
 	assign pc_debug_data = pc;
-	assign sext11 = {{5{IR[10]}}, IR[10:0]};
+	// assign sext11 = {{5{IR[10]}}, IR[10:0]};
 
 
 	//----------------------------------------------------------------------
@@ -138,17 +139,23 @@ module PUnCDatapath(
 	// Add all other datapath logic here
 	//----------------------------------------------------------------------
 	wire  [15:0] pc_ld_data;
+	// assign LEFT_SIDE_OF_= (selector == first define) ? RH 1 : RH 2;
 	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output : RF_data ;
 	// assign reg_ext_9 = {{7{reg[8]}},  reg[8:0] };
-
-	/* case (PC_data_sel)
-			`PC_ADD: begin
-				pc = add_output;
-			end
-			`BASE_R: begin
-				pc = RF_data;
-			end
-		endcase */
+	// assign add_output = (PC_add_sel == `PCoffset11) ? {{7{reg[8]}},  reg[8:0] } : {{7{reg[8]}},  reg[8:0] } // do sext
+	
+	// if (PC_ld == 1) begin ??
+	assign memAddrMux = (addr_MEM_sel == `PC_addr) ? pc :
+						(addr_MEM_sel == `PC_ALU_addr) ? RF_data : store; // can you just say store as second
+	assign RFdataMux = (w_RF_sel == `PC_DATA) ? pc : 
+						(w_RF_sel == `MEM_DATA) ? memAddrMux : RF_data;
+	assign ALU_A = (A_sel == `ALU_PC) ? pc : rd0RF;
+	assign ALU_B = (B_sel == `ALU_RF_1_DATA) ? rd1RF : sext_data; //sext the data here too?
+	assign cmp_input = (NZP_sel == `NZP_ALU_RESULT) ? RF_data : rd0RF;
+	assign ALU_output = (ALU_sel == `AND_op) ? (ALU_A & ALU_B) : 
+						(ALU_sel == `ADD_op) ? (ALU_A + ALU_B) :
+						(ALU_sel == `PASS_A_op) ? ALU_A : !(ALU_A);
+	
 	// use non-blockinh assignment in here
 	always @(posedge clk) begin // check over what is clk triggered, whats not
 		if(PC_ld == 1) begin
@@ -156,6 +163,7 @@ module PUnCDatapath(
 		end
 		// set registers in here (like IR)
 		// PC data select mux
+		/*
 		case (PC_data_sel)
 			`PC_ADD: begin
 				pc <= add_output;
@@ -164,18 +172,20 @@ module PUnCDatapath(
 				pc <= RF_data;
 			end
 		endcase
+		*/
 
 		// Calculating PC_ADD
-		case(PC_add_sel)
+		/* case(PC_add_sel)
 			`PCoffset11: begin
 				add_output = sext11;
 			end
 			`PCoffset9: begin
 				add_output = pc + IR[8:0] - 1; //SEXT THIS
 			end
-		endcase
+		endcase */
 
 		// Mem read/write address
+		/*
 		if (PC_ld == 1) begin
 			case (addr_MEM_sel)
 				`PC_addr: begin
@@ -189,8 +199,9 @@ module PUnCDatapath(
 				end
 			endcase
 		end
-		
+		*/
 		// RF w data selector mux
+		/*
 		case (w_RF_sel)
 			`PC_DATA: begin
 				RFdataMux = pc;
@@ -202,8 +213,9 @@ module PUnCDatapath(
 				RFdataMux = RF_data;
 			end
 		endcase
-
+		*/
 		// ALU A mux 
+		/*
 		case (A_sel)
 			`ALU_PC: begin
 				ALU_A = pc;
@@ -212,8 +224,9 @@ module PUnCDatapath(
 				ALU_A = rd0RF;
 			end
 		endcase
-
+		*/
 		// ALU B mux
+		/*
 		case (B_sel)
 			`ALU_RF_1_DATA: begin
 				ALU_B = rd1RF;
@@ -222,7 +235,8 @@ module PUnCDatapath(
 				ALU_B = sext_data; //SEXT THE DATA?
 			end
 		endcase
-		
+		*/
+		/*
 		// NZP mux
 		case (NZP_sel)
 			`NZP_ALU_RESULT: begin
@@ -232,7 +246,7 @@ module PUnCDatapath(
 				cmp_input = rd0RF;
 			end
 		endcase
-
+		*/
 		// NZP comparator
 		if(cmp_input < 0 && N_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
@@ -245,6 +259,7 @@ module PUnCDatapath(
 		end
 
 		// ALU
+		/*
 		case (ALU_sel)
 			`AND_op: begin
 				RF_data = ALU_A & ALU_B;
@@ -259,7 +274,7 @@ module PUnCDatapath(
 				RF_data = !(ALU_A);
 			end
 		endcase
-
+		*/
 		if(store_ld == 1) begin
 			store = RF_data;
 		end
