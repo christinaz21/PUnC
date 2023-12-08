@@ -162,91 +162,7 @@ module PUnCDatapath(
 			pc <= pc_ld_data;
 		end
 		// set registers in here (like IR)
-		// PC data select mux
-		/*
-		case (PC_data_sel)
-			`PC_ADD: begin
-				pc <= add_output;
-			end
-			`BASE_R: begin
-				pc <= RF_data;
-			end
-		endcase
-		*/
-
-		// Calculating PC_ADD
-		/* case(PC_add_sel)
-			`PCoffset11: begin
-				add_output = sext11;
-			end
-			`PCoffset9: begin
-				add_output = pc + IR[8:0] - 1; //SEXT THIS
-			end
-		endcase */
-
-		// Mem read/write address
-		/*
-		if (PC_ld == 1) begin
-			case (addr_MEM_sel)
-				`PC_addr: begin
-					memAddrMux = pc;
-				end
-				`PC_ALU_addr: begin
-					memAddrMux = RF_data;
-				end
-				`PC_store_addr: begin	
-					memAddrMux = store;
-				end
-			endcase
-		end
-		*/
-		// RF w data selector mux
-		/*
-		case (w_RF_sel)
-			`PC_DATA: begin
-				RFdataMux = pc;
-			end
-			`MEM_DATA: begin
-				RFdataMux = memAddrMux;
-			end
-			`ALU_DATA: begin
-				RFdataMux = RF_data;
-			end
-		endcase
-		*/
-		// ALU A mux 
-		/*
-		case (A_sel)
-			`ALU_PC: begin
-				ALU_A = pc;
-			end
-			`ALU_RF_0_DATA: begin
-				ALU_A = rd0RF;
-			end
-		endcase
-		*/
-		// ALU B mux
-		/*
-		case (B_sel)
-			`ALU_RF_1_DATA: begin
-				ALU_B = rd1RF;
-			end
-			`ALU_sext: begin
-				ALU_B = sext_data; //SEXT THE DATA?
-			end
-		endcase
-		*/
-		/*
-		// NZP mux
-		case (NZP_sel)
-			`NZP_ALU_RESULT: begin
-				cmp_input = RF_data;
-			end
-			`NZP_MEM_DATA: begin
-				cmp_input = rd0RF;
-			end
-		endcase
-		*/
+	
 		// NZP comparator
 		if(cmp_input < 0 && N_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
@@ -257,24 +173,6 @@ module PUnCDatapath(
 		if(cmp_input > 0 && P_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
 		end
-
-		// ALU
-		/*
-		case (ALU_sel)
-			`AND_op: begin
-				RF_data = ALU_A & ALU_B;
-			end
-			`ADD_op: begin
-				RF_data = ALU_A + ALU_B;
-			end
-			`PASS_A_op: begin
-				RF_data = ALU_A;
-			end
-			`NOT_op: begin
-				RF_data = !(ALU_A);
-			end
-		endcase
-		*/
 		if(store_ld == 1) begin
 			store = RF_data;
 		end
@@ -292,9 +190,5 @@ module PUnCDatapath(
 		end
 
 	end
-
-	/*always @(*) begin //do the muxes go here or in the other
-		
-	end*/
 
 endmodule
