@@ -75,7 +75,10 @@ module PUnCDatapath(
 
 	// output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
 	output reg [15:0] IR_to_controller, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	output reg [15:0] RF_data //IS TYPE RIGHT
+	output reg [15:0] RF_data,//IS TYPE RIGHT
+	output reg n,
+	output reg z,
+	output reg p
 );
 
 	// Local Registers
@@ -180,12 +183,22 @@ module PUnCDatapath(
 		// I think we have to use $signed() here
 		if(cmp_input < 0 && N_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
+			n <= 1;
+			z <= 0;
+			p <= 0;
+
 		end
 		if(cmp_input == 0 && Z_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
+			n <= 0;
+			z <= 1;
+			p <= 0;
 		end
 		if(cmp_input > 0 && P_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
+			n <= 0;
+			z <= 0;
+			p <= 1;
 		end
 		if(store_ld == 1) begin
 			store = RF_data;
