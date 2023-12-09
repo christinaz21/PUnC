@@ -12,31 +12,37 @@ module PUnCControl(
 	// Add more ports here
 	// SKIPPED DOING DEBUG STUFF
 
-	output PC_data_sel, //PROBABLY CHANGE LENGTH OF SELECTS
-	output PC_add_sel,
-	output PC_ld,
-	output PC_clr,
-	output PC_inc,
-	output IR_ld,
-	output [1:0] addr_MEM_sel,
-	output w_en_MEM, //CHECK
-	output [1:0] w_RF_sel,
-	output rst_MEM,
-	output wire [2:0] r_addr_0_RF,
-	output wire [2:0] r_addr_1_RF,
-	output wire [2:0] r_addr_2_RF,
-	output wire [2:0] w_addr_RF,
-	output w_en_RF,
-	output rst_RF,
-	input sext_data,
-	input A_sel,
-	input B_sel,
-	input ALU_sel,
-	input NZP_sel, 
-	input N_ld,
-	input Z_ld,
-	input P_ld,
-	input store_ld, //DIDN'T CAPITALIZE
+	output reg PC_data_sel, //PROBABLY CHANGE LENGTH OF SELECTS
+	output reg PC_add_sel,
+	output reg PC_ld,
+	output reg PC_clr,
+	output reg PC_inc,
+	output reg IR_ld,
+	output reg [1:0] addr_MEM_sel,
+	output reg w_en_MEM, //CHECK
+	output reg [1:0] w_RF_sel,
+	output reg rst_MEM,
+	output reg  [2:0] r_addr_0_RF,
+	output reg  [2:0] r_addr_1_RF,
+	output reg  [2:0] r_addr_2_RF,
+	output reg  [2:0] w_addr_RF,
+	output reg w_en_RF,
+	output reg rst_RF,
+	output reg sext_data,
+	output reg A_sel,
+	output reg B_sel,
+	output reg ALU_sel,
+	output reg NZP_sel, 
+	output reg N_ld,
+	output reg Z_ld,
+	output reg P_ld,
+	output reg store_ld, //DIDN'T CAPITALIZE
+
+	input [15:0] IR_to_controller, // WHY IS THIS LOCAL AND NOT AN OUTPUT
+	input [15:0] RF_data,//IS TYPE RIGHT
+	input n,
+	input z,
+	input p
 );
 
 	// FSM States
@@ -45,26 +51,78 @@ module PUnCControl(
 	localparam STATE_DECODE		= 3'd1;
 	localparam STATE_EXECUTE_1	= 3'd2;
 	localparam STATE_EXECUTE_2 	= 3'd3;
-	localparam STAET_HALT		= 3'd4; // is it supposed to be 2'd3 idk how decimal works
+	localparam STATE_HALT		= 3'd4; // is it supposed to be 2'd3 idk how decimal works
 	
+	// Opcode defs
+	`define ADD 4'b0001
+	`define AND 4'b0101
+	`define BR	4'b0000
+	`define JMP 4'b1100
+	`define JSR 4'b0100
+	`define LD	4'b0010
+	`define LDI	4'b1010	// do i have to have state 1 and 2 for this
+	`define LDR 4'b0110
+	`define LEA 4'b1110
+	`define NOT 4'b1001
+	`define RET 4'b1100
+	`define ST 	4'b0011
+	`define STI 4'b1011	// same for this
+	`define STR	4'b0111	
+	`define HALT 4'b1111
 	// fetch, decode, execute, halt
 
+	
 	// State, Next State
 	reg [2:0] state, next_state;
+	wire [3:0] op;
+	assign op = IR_to_controller[15:12];
 	// ir[`OC]
 	// Output Combinational Logic
 	always @( * ) begin
 		// Set default values for outputs here (prevents implicit latching)
+		w_en_MEM = 0;
+		addr_MEM_sel = 0; //X 
+		rst_MEM = 0;
+		w_RF_sel = 0; //X
+		w_en_RF = 0;
+		w_addr_RF = 0; //X
+		// r_addr_2_RF = // THIS IS JUST DEBUG DATA, ALWAYS SAME, DON"T INCLUDE
+		r_addr_0_RF = 0; //X
+		r_addr_1_RF = 0; //X
+		rst_RF = 0;
+		sext_data = 0; //X
+		A_sel = 0; //X
+		B_sel = 0; //X
+		ALU_sel = 0; //X
+		IR_ld = 0;
+		PC_inc = 0; 
+		PC_clr = 0;
+		PC_ld = 0; 
+		PC_add_sel = 0; //X
+		PC_data_sel = 0; //X
+		store_ld = 0; 
+		NZP_sel = 0; //x
+		N_ld = 0; //x
+		Z_ld = 0; //x
+		P_ld = 0; //x
 
 		// Add your output logic here
 		case (state)
 			STATE_FETCH: begin
-				
+				IR_ld = 1;
+				PC_inc = 1; 
 			end
 			STATE_DECODE: begin
-
+				// ARE TEHRE ANY CHNAGES HERE?
 			end
-			STATE_EXECUTE: begin
+			STATE_EXECUTE_1: begin
+				case(op)
+					`ADD: begin
+						
+					end
+				endcase
+			end
+			STATE_EXECUTE_2: begin
 
 			end
 			STATE_HALT: begin
