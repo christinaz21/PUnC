@@ -10,7 +10,33 @@ module PUnCControl(
 	input  wire        rst,            // Reset
 
 	// Add more ports here
+	// SKIPPED DOING DEBUG STUFF
 
+	output PC_data_sel, //PROBABLY CHANGE LENGTH OF SELECTS
+	output PC_add_sel,
+	output PC_ld,
+	output PC_clr,
+	output PC_inc,
+	output IR_ld,
+	output [1:0] addr_MEM_sel,
+	output w_en_MEM, //CHECK
+	output [1:0] w_RF_sel,
+	output rst_MEM,
+	output wire [2:0] r_addr_0_RF,
+	output wire [2:0] r_addr_1_RF,
+	output wire [2:0] r_addr_2_RF,
+	output wire [2:0] w_addr_RF,
+	output w_en_RF,
+	output rst_RF,
+	input sext_data,
+	input A_sel,
+	input B_sel,
+	input ALU_sel,
+	input NZP_sel, 
+	input N_ld,
+	input Z_ld,
+	input P_ld,
+	input store_ld, //DIDN'T CAPITALIZE
 );
 
 	// FSM States
