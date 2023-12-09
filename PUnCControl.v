@@ -4,34 +4,6 @@
 
 `include "Defines.v"
 
-`define PC_ADD	1'b0
-`define BASE_R	1'b1
- 
-`define PC_addr 2'b00
-`define PC_ALU_addr 2'b01
-`define PC_store_addr 2'b10
-
-`define PC_DATA 2'b00
-`define MEM_DATA 2'b01
-`define ALU_DATA 2'b10
-
-`define PCoffset11 1'b0
-`define PCoffset9  1'b1
-
-`define ALU_PC 1'b0
-`define ALU_RF_0_DATA 1'b1
-
-`define ALU_RF_1_DATA 1'b0
-`define ALU_sext 1'b1
-
-`define NZP_ALU_RESULT 1'b0
-`define NZP_MEM_DATA   1'b1
-
-`define ADD_op 2'b00
-`define AND_op 2'b01
-`define PASS_A_op 2'b10
-`define NOT_op 2'b11
-
 module PUnCControl(
 	// External Inputs
 	input  wire        clk,            // Clock
@@ -194,7 +166,7 @@ module PUnCControl(
 						NZP_sel = `NZP_ALU_RESULT;
 					end
 					`AND: begin
-						
+
 						
 					end
 				endcase
