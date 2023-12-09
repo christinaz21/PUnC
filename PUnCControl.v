@@ -155,18 +155,90 @@ module PUnCControl(
 			STATE_EXECUTE_1: begin
 				case(op)
 					`ADD: begin
+						w_RF_sel = `ALU_DATA;
 						w_en_RF = 1;
 						w_addr_RF = IR[11:9];
 						r_addr_0_RF = IR[8:6];
 						r_addr_1_RF = IR[2:0];
 						sext_data = sext5;
-						A_sel = `ALU_PC;
+						A_sel = `ALU_RF_0_DATA;
 						B_sel = IR[5];
 						ALU_sel = `ADD_op;
 						NZP_sel = `NZP_ALU_RESULT;
 					end
 					`AND: begin
-
+						w_RF_sel = `ALU_DATA;
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
+						r_addr_0_RF = IR[8:6];
+						r_addr_1_RF = IR[2:0];
+						sext_data = sext5;
+						A_sel = `ALU_RF_0_DATA;
+						B_sel = IR[5];
+						ALU_sel = `AND_op;
+						NZP_sel = `NZP_ALU_RESULT;
+					end
+					`BR: begin
+						PC_ld = (IR[11] & n) | (IR[10] & z) | (IR[9] & p);
+						PC_add_sel = `PCoffset9;
+						PC_data_sel = `PC_ADD;
+					end
+					`JMP: begin
+						r_addr_0_RF = IR[8:6];
+						A_sel = `ALU_RF_0_DATA;
+						ALU_sel = `PASS_A_op;
+						PC_ld = 1;
+						PC_data_sel = `BASE_R;
+					end
+					`JSR: begin
+						w_RF_sel = `PC_DATA;
+						w_en_RF = 1;
+						w_addr_RF = 111;
+						r_addr_0_RF = IR[8:6];
+						A_sel = `ALU_RF_0_DATA;
+						ALU_sel = `PASS_A_op;
+						PC_ld = 1;
+						PC_add_sel = `PCoffset11;
+						if (IR[11]) begin
+							PC_data_sel = `PC_ADD;
+						end
+						else begin
+							PC_data_sel = `BASE_R;
+						end
+					end
+					`LD: begin
+						addr_MEM_sel = `PC_ALU_addr;
+						w_RF_sel = `MEM_DATA;
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
+						sext_data = sext9;
+						A_sel = `ALU_PC;
+						B_sel = 1;
+						ALU_sel = `ADD_op;
+						store_ld = 1;
+						NZP_sel = `MEM_DATA;
+					end
+					`LDI: begin
+						addr_MEM_sel = `PC_ALU_addr;
+						sext_data = sext9;
+						A_sel = `ALU_PC;
+						B_sel = 1;
+						ALU_sel = `ADD_op;
+						store_ld = 1;
+					end
+					`LDR: begin
+						addr_MEM_sel = `PC_ALU_addr;
+						w_RF_sel = `MEM_DATA;
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
+						r_addr_0_RF = IR[8:6];
+						sext_data = sext6;
+						A_sel = `ALU_RF_0_DATA;
+						B_sel = 1;
+						ALU_sel = `ADD_op;
+						NZP_sel = `MEM_DATA;
+					end
+					`LEA: begin
 						
 					end
 				endcase
