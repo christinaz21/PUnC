@@ -145,7 +145,7 @@ module PUnCDatapath(
 	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output : RF_data ;
 	// assign reg_ext_9 = {{7{reg[8]}},  reg[8:0] };
 	// assign add_output = {{7{ir[8]}},  ir[8:0] };
-	assign add_output = (PC_add_sel == `PCoffset11) ? {{7{ir[11]}},  ir[11:0] } : {{7{ir[8]}},  ir[8:0] }; // do sext
+	assign add_output = (PC_add_sel == `PCoffset11) ? {{4{ir[11]}},  ir[11:0] } : {{7{ir[8]}},  ir[8:0] }; // do sext
 	
 	// if (PC_ld == 1) begin ??
 	assign memAddrMux = (addr_MEM_sel == `PC_addr) ? pc :
