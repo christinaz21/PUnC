@@ -110,8 +110,8 @@ module PUnCControl(
 	
 	assign op = IR[15:12];
 	assign sext5 = {{7{IR[4]}},  IR[4:0] };
-	assign sext5 = {{3{IR[8]}},  IR[8:0] };
-	assign sext5 = {{6{IR[5]}},  IR[5:0] };
+	assign sext9 = {{3{IR[8]}},  IR[8:0] };
+	assign sext6 = {{6{IR[5]}},  IR[5:0] };
 	
 	// ir[`OC]
 	// Output Combinational Logic
