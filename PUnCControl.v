@@ -38,7 +38,7 @@ module PUnCControl(
 	output reg P_ld,
 	output reg store_ld, //DIDN'T CAPITALIZE
 
-	input [15:0] IR_to_controller, // WHY IS THIS LOCAL AND NOT AN OUTPUT
+	input [15:0] IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
 	input [15:0] RF_data,//IS TYPE RIGHT
 	input n,
 	input z,
@@ -69,13 +69,42 @@ module PUnCControl(
 	`define STI 4'b1011	// same for this
 	`define STR	4'b0111	
 	`define HALT 4'b1111
+
+	// MUX defs
+	`define PC_ADD	1'b0
+	`define BASE_R	1'b1
+	
+	`define PC_addr 2'b00
+	`define PC_ALU_addr 2'b01
+	`define PC_store_addr 2'b10
+
+	`define PC_DATA 2'b00
+	`define MEM_DATA 2'b01
+	`define ALU_DATA 2'b10
+
+	`define PCoffset11 1'b0
+	`define PCoffset9  1'b1
+
+	`define ALU_PC 1'b0
+	`define ALU_RF_0_DATA 1'b1
+
+	`define ALU_RF_1_DATA 1'b0
+	`define ALU_sext 1'b1
+
+	`define NZP_ALU_RESULT 1'b0
+	`define NZP_MEM_DATA   1'b1
+
+	`define ADD_op 2'b00
+	`define AND_op 2'b01
+	`define PASS_A_op 2'b10
+	`define NOT_op 2'b11
 	// fetch, decode, execute, halt
 
 	
 	// State, Next State
 	reg [2:0] state, next_state;
 	wire [3:0] op;
-	assign op = IR_to_controller[15:12];
+	assign op = IR[15:12];
 	// ir[`OC]
 	// Output Combinational Logic
 	always @( * ) begin
@@ -117,6 +146,14 @@ module PUnCControl(
 			end
 			STATE_EXECUTE_1: begin
 				case(op)
+					`ADD: begin
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
+						r_addr_0_RF = IR[8:6];
+						r_addr_1_RF = IR[2:0];
+						sext_data = IR[4:0];
+						A_sel = `RF_0_DATA;
+					end
 					`ADD: begin
 						
 					end
