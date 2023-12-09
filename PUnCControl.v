@@ -4,6 +4,34 @@
 
 `include "Defines.v"
 
+`define PC_ADD	1'b0
+`define BASE_R	1'b1
+ 
+`define PC_addr 2'b00
+`define PC_ALU_addr 2'b01
+`define PC_store_addr 2'b10
+
+`define PC_DATA 2'b00
+`define MEM_DATA 2'b01
+`define ALU_DATA 2'b10
+
+`define PCoffset11 1'b0
+`define PCoffset9  1'b1
+
+`define ALU_PC 1'b0
+`define ALU_RF_0_DATA 1'b1
+
+`define ALU_RF_1_DATA 1'b0
+`define ALU_sext 1'b1
+
+`define NZP_ALU_RESULT 1'b0
+`define NZP_MEM_DATA   1'b1
+
+`define ADD_op 2'b00
+`define AND_op 2'b01
+`define PASS_A_op 2'b10
+`define NOT_op 2'b11
+
 module PUnCControl(
 	// External Inputs
 	input  wire        clk,            // Clock
@@ -104,7 +132,15 @@ module PUnCControl(
 	// State, Next State
 	reg [2:0] state, next_state;
 	wire [3:0] op;
+	wire [15:0] sext5;
+	wire [15:0] sext9;
+	wire [15:0] sext6;
+	
 	assign op = IR[15:12];
+	assign sext5 = {{7{IR[4]}},  IR[4:0] };
+	assign sext5 = {{3{IR[8]}},  IR[8:0] };
+	assign sext5 = {{6{IR[5]}},  IR[5:0] };
+	
 	// ir[`OC]
 	// Output Combinational Logic
 	always @( * ) begin
@@ -151,10 +187,14 @@ module PUnCControl(
 						w_addr_RF = IR[11:9];
 						r_addr_0_RF = IR[8:6];
 						r_addr_1_RF = IR[2:0];
-						sext_data = IR[4:0];
-						A_sel = `RF_0_DATA;
+						sext_data = sext5;
+						A_sel = `ALU_PC;
+						B_sel = IR[5];
+						ALU_sel = `ADD_op;
+						NZP_sel = `NZP_ALU_RESULT;
 					end
-					`ADD: begin
+					`AND: begin
+						
 						
 					end
 				endcase
