@@ -281,13 +281,24 @@ module PUnCControl(
 						ALU_sel = `ADD_op;
 						store_ld = 1;
 					end
+					`STR: begin
+						w_en_MEM = 1;
+						addr_MEM_sel = `PC_ALU_addr;
+						r_addr_0_RF = IR[8:6];
+						r_addr_1_RF = IR[11:9];
+						sext_data = sext6;
+						A_sel = `ALU_RF_0_DATA;
+						B_sel = 1;
+						ALU_sel = `ADD_op;
+					end
 				endcase
 			end
 			STATE_EXECUTE_2: begin
 
 			end
 			STATE_HALT: begin
-
+				rst_MEM = 1;
+				rst_RF = 1;
 			end
 		endcase
 		//
