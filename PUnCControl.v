@@ -165,6 +165,9 @@ module PUnCControl(
 						B_sel = IR[5];
 						ALU_sel = `ADD_op;
 						NZP_sel = `NZP_ALU_RESULT;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`AND: begin
 						w_RF_sel = `ALU_DATA;
@@ -177,6 +180,9 @@ module PUnCControl(
 						B_sel = IR[5];
 						ALU_sel = `AND_op;
 						NZP_sel = `NZP_ALU_RESULT;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`BR: begin
 						PC_ld = (IR[11] & n) | (IR[10] & z) | (IR[9] & p);
@@ -217,6 +223,9 @@ module PUnCControl(
 						ALU_sel = `ADD_op;
 						store_ld = 1;
 						NZP_sel = `NZP_MEM_DATA;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`LDI: begin
 						addr_MEM_sel = `PC_ALU_addr;
@@ -237,6 +246,9 @@ module PUnCControl(
 						B_sel = 1;
 						ALU_sel = `ADD_op;
 						NZP_sel = `NZP_MEM_DATA;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`LEA: begin
 						w_RF_sel = `ALU_DATA;
@@ -247,6 +259,9 @@ module PUnCControl(
 						B_sel = 1;
 						ALU_sel = `ADD_op;
 						NZP_sel = `NZP_ALU_RESULT;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`NOT: begin
 						w_RF_sel = `ALU_DATA;
@@ -256,6 +271,9 @@ module PUnCControl(
 						A_sel = `ALU_RF_0_DATA;
 						ALU_sel = `NOT_op;
 						NZP_sel = `NZP_ALU_RESULT;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`RET: begin
 						r_addr_0_RF = IR[8:6];
@@ -300,9 +318,15 @@ module PUnCControl(
 						w_RF_sel = `MEM_DATA;
 						w_en_RF = IR[11:9];
 						NZP_sel = `NZP_MEM_DATA;
+						N_ld = 1;
+						Z_ld = 1;
+						P_ld = 1;
 					end
 					`STI: begin
 						w_en_MEM = 1;
+						addr_MEM_sel = `PC_store_addr;
+						r_addr_1_RF = IR[11:9];
+					end
 				endcase						
 			end
 			STATE_HALT: begin
