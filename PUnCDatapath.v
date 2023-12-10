@@ -74,7 +74,7 @@ module PUnCDatapath(
 	input store_ld, //DIDN'T CAPITALIZE
 
 	// output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	output reg [15:0] IR_to_controller, // WHY IS THIS LOCAL AND NOT AN OUTPUT
+	output reg [15:0] IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
 	output reg [15:0] RF_data,//IS TYPE RIGHT
 	output reg n,
 	output reg z,
@@ -175,7 +175,7 @@ module PUnCDatapath(
 		end
 		if(IR_ld) begin
 			ir <= rd0MEM;
-			IR_to_controller <= ir;
+			IR <= ir;
 		end
 		// set registers in here (like IR)
 	
