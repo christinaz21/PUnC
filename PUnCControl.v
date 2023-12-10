@@ -374,7 +374,7 @@ module PUnCControl(
 			end
 			// Do you even need to have this
 			STATE_HALT: begin
-				next_state = state;
+				next_state = STATE_HALT;
 			end
 		endcase
 	end
