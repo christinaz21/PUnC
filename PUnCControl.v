@@ -216,7 +216,7 @@ module PUnCControl(
 						B_sel = 1;
 						ALU_sel = `ADD_op;
 						store_ld = 1;
-						NZP_sel = `MEM_DATA;
+						NZP_sel = `NZP_MEM_DATA;
 					end
 					`LDI: begin
 						addr_MEM_sel = `PC_ALU_addr;
@@ -236,10 +236,50 @@ module PUnCControl(
 						A_sel = `ALU_RF_0_DATA;
 						B_sel = 1;
 						ALU_sel = `ADD_op;
-						NZP_sel = `MEM_DATA;
+						NZP_sel = `NZP_MEM_DATA;
 					end
 					`LEA: begin
-						
+						w_RF_sel = `ALU_DATA;
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
+						sext_data = sext9;
+						A_sel = `ALU_PC;
+						B_sel = 1;
+						ALU_sel = `ADD_op;
+						NZP_sel = `NZP_ALU_RESULT;
+					end
+					`NOT: begin
+						w_RF_sel = `ALU_DATA;
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
+						r_addr_0_RF = IR[8:6];
+						A_sel = `ALU_RF_0_DATA;
+						ALU_sel = `NOT_op;
+						NZP_sel = `NZP_ALU_RESULT;
+					end
+					`RET: begin
+						r_addr_0_RF = IR[8:6];
+						A_sel = `ALU_RF_0_DATA;
+						ALU_sel = `PASS_A_op;
+						PC_ld = 1;
+						PC_data_sel = `BASE_R;
+					end
+					`ST: begin
+						w_en_MEM = 1;
+						addr_MEM_sel = `PC_ALU_addr;
+						r_addr_1_RF = IR[11:9];
+						sext_data = sext9;
+						A_sel = `ALU_PC;
+						B_sel = 1;
+						ALU_sel = `ADD_op;
+					end
+					`STI: begin
+						addr_MEM_sel = `PC_ALU_addr;
+						sext_data = sext9;
+						A_sel = `ALU_PC;
+						B_sel = 1; 
+						ALU_sel = `ADD_op;
+						store_ld = 1;
 					end
 				endcase
 			end
