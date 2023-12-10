@@ -353,11 +353,20 @@ module PUnCControl(
 				next_state = STATE_DECODE; 
 			end
 			STATE_DECODE: begin
-				next_state = STATE_EXECUTE_1; 
-				// check if opcode is halt then go to halt
+				if(op == `HALT) begin
+					next_state = STATE_HALT;
+				end
+				else begin
+					next_state = STATE_EXECUTE_1; 
+				end
 			end
 			STATE_EXECUTE_1: begin
-				next_state = STATE_FETCH; 
+				if(op == `LDI || op == `STI) begin
+					next_state = STATE_EXECUTE_2;
+				end
+				else begin
+					next_state = STATE_FETCH; 
+				end
 				//in execute see if second stage or back to fetch
 			end
 			STATE_EXECUTE_2: begin
