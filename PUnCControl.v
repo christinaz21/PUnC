@@ -294,7 +294,16 @@ module PUnCControl(
 				endcase
 			end
 			STATE_EXECUTE_2: begin
-
+				case(op)
+					`LDI: begin
+						addr_MEM_sel = `PC_store_addr; 
+						w_RF_sel = `MEM_DATA;
+						w_en_RF = IR[11:9];
+						NZP_sel = `NZP_MEM_DATA;
+					end
+					`STI: begin
+						w_en_MEM = 1;
+				endcase						
 			end
 			STATE_HALT: begin
 				rst_MEM = 1;
