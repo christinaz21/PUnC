@@ -34,10 +34,10 @@ module PUnC(
 	wire  [2:0] w_addr_RF;
 	wire w_en_RF;
 	wire rst_RF;
-	wire sext_data;
+	wire [15:0] sext_data;
 	wire A_sel;
 	wire B_sel;
-	wire ALU_sel;
+	wire [1:0] ALU_sel;
 	wire NZP_sel; 
 	wire N_ld;
 	wire Z_ld;

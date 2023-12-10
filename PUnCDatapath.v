@@ -63,10 +63,10 @@ module PUnCDatapath(
 	input wire [2:0] w_addr_RF,
 	input w_en_RF,
 	input rst_RF,
-	input sext_data,
+	input [15:0] sext_data,
 	input A_sel,
 	input B_sel,
-	input ALU_sel,
+	input [1:0] ALU_sel,
 	input NZP_sel, 
 	input N_ld,
 	input Z_ld,
@@ -75,7 +75,7 @@ module PUnCDatapath(
 
 	// output PC, // WHY IS THIS LOCAL AND NOT AN OUTPUT
 	output reg [15:0] IR, // WHY IS THIS LOCAL AND NOT AN OUTPUT
-	output reg [15:0] RF_data,//IS TYPE RIGHT
+	output [15:0] RF_data,//IS TYPE RIGHT
 	output reg n,
 	output reg z,
 	output reg p
@@ -148,7 +148,7 @@ module PUnCDatapath(
 	assign pc_ld_data = (PC_data_sel == `PC_ADD) ? add_output : RF_data ;
 	// assign reg_ext_9 = {{7{reg[8]}},  reg[8:0] };
 	// assign add_output = {{7{ir[8]}},  ir[8:0] };
-	assign add_output = (PC_add_sel == `PCoffset11) ? {{4{ir[11]}},  ir[11:0] } : {{7{ir[8]}},  ir[8:0] }; // do sext
+	assign add_output = (PC_add_sel == `PCoffset11) ? (pc + {{4{ir[10]}},  ir[10:0] }) : (pc + {{7{ir[8]}},  ir[8:0] }); // do sext
 	
 	// if (PC_ld == 1) begin ??
 	assign memAddrMux = (addr_MEM_sel == `PC_addr) ? pc :
@@ -157,9 +157,10 @@ module PUnCDatapath(
 						(w_RF_sel == `MEM_DATA) ? rd0MEM : RF_data; // rd0MEM used to be memAddrMux idk why
 	assign ALU_A = (A_sel == `ALU_PC) ? pc : rd0RF;
 	assign ALU_B = (B_sel == `ALU_RF_1_DATA) ? rd1RF : sext_data; //sext the data here too?
-	assign cmp_input = (NZP_sel == `NZP_ALU_RESULT) ? RF_data : rd0RF;
-	assign ALU_output = (ALU_sel == `AND_op) ? (ALU_A & ALU_B) : 
-						(ALU_sel == `ADD_op) ? (ALU_A + ALU_B) :
+	assign cmp_input = (NZP_sel == `NZP_ALU_RESULT) ? RF_data : rd0MEM;
+	assign RF_data = (ALU_sel == `AND_op) ? (ALU_A & ALU_B) : 
+						(ALU_sel == `ADD_op) ? ($signed(ALU_A) + $signed(ALU_B)) :
+						(ALU_sel == `NOT_op) ? (~ALU_A) :
 						(ALU_sel == `PASS_A_op) ? ALU_A : !(ALU_A);
 	
 	// use non-blockinh assignment in here
@@ -168,40 +169,40 @@ module PUnCDatapath(
 			pc <= pc_ld_data;
 		end
 		if(PC_clr == 1) begin
-			pc <= 0;
+			pc = 0;
 		end
 		if(PC_inc == 1) begin
 			pc <= pc + 1;
 		end
 		if(IR_ld) begin
 			ir <= rd0MEM;
-			IR <= ir;
+			IR <= rd0MEM;
 		end
 		// set registers in here (like IR)
 	
 		// NZP comparator
 		// I think we have to use $signed() here
-		if(cmp_input < 0 && N_ld) begin //is the signededness right?
+		if($signed(cmp_input) < 0 && N_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
 			n <= 1;
 			z <= 0;
 			p <= 0;
 
 		end
-		if(cmp_input == 0 && Z_ld) begin //is the signededness right?
+		if($signed(cmp_input) == 0 && Z_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
 			n <= 0;
 			z <= 1;
 			p <= 0;
 		end
-		if(cmp_input > 0 && P_ld) begin //is the signededness right?
+		if($signed(cmp_input) > 0 && P_ld) begin //is the signededness right?
 			//IS THIS SUPPOSED TO BE SETTING AN OUTPUT
 			n <= 0;
 			z <= 0;
 			p <= 1;
 		end
 		if(store_ld == 1) begin
-			store = RF_data;
+			store = rd0MEM;
 		end
 
 	end

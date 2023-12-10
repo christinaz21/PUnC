@@ -28,10 +28,10 @@ module PUnCControl(
 	output reg  [2:0] w_addr_RF,
 	output reg w_en_RF,
 	output reg rst_RF,
-	output reg sext_data,
+	output reg [15:0] sext_data,
 	output reg A_sel,
 	output reg B_sel,
-	output reg ALU_sel,
+	output reg [1:0] ALU_sel,
 	output reg NZP_sel, 
 	output reg N_ld,
 	output reg Z_ld,
@@ -109,9 +109,9 @@ module PUnCControl(
 	wire [15:0] sext6;
 	
 	assign op = IR[15:12];
-	assign sext5 = {{7{IR[4]}},  IR[4:0] };
-	assign sext9 = {{3{IR[8]}},  IR[8:0] };
-	assign sext6 = {{6{IR[5]}},  IR[5:0] };
+	assign sext5 = {{11{IR[4]}},  IR[4:0] };
+	assign sext9 = {{7{IR[8]}},  IR[8:0] };
+	assign sext6 = {{10{IR[5]}},  IR[5:0] };
 	
 	// ir[`OC]
 	// Output Combinational Logic
@@ -185,7 +185,7 @@ module PUnCControl(
 						P_ld = 1;
 					end
 					`BR: begin
-						PC_ld = (IR[11] & n) | (IR[10] & z) | (IR[9] & p);
+						PC_ld = (IR[11] & n) || (IR[10] & z) || (IR[9] & p);
 						PC_add_sel = `PCoffset9;
 						PC_data_sel = `PC_ADD;
 					end
@@ -199,7 +199,7 @@ module PUnCControl(
 					`JSR: begin
 						w_RF_sel = `PC_DATA;
 						w_en_RF = 1;
-						w_addr_RF = 111;
+						w_addr_RF = 3'b111;
 						r_addr_0_RF = IR[8:6];
 						A_sel = `ALU_RF_0_DATA;
 						ALU_sel = `PASS_A_op;
@@ -316,7 +316,8 @@ module PUnCControl(
 					`LDI: begin
 						addr_MEM_sel = `PC_store_addr; 
 						w_RF_sel = `MEM_DATA;
-						w_en_RF = IR[11:9];
+						w_en_RF = 1;
+						w_addr_RF = IR[11:9];
 						NZP_sel = `NZP_MEM_DATA;
 						N_ld = 1;
 						Z_ld = 1;
@@ -340,6 +341,9 @@ module PUnCControl(
 		//		case()
 
 		//endcase
+		if(rst) begin
+           PC_clr = 1;
+       end
 	end
 
 	// Next State Combinational Logic
