@@ -2,7 +2,7 @@
 1C69   // ADD R6, R1, 9
 0403   // BRz #3
 923F   // NOT R1, R0
-4802   // JSR 6
+4802   // JSR 2
 3A0C   // ST R5, 12
 F000   // HALT
 943F   // NOT R2, R0    // R2 == - R0
@@ -10,7 +10,7 @@ F000   // HALT
 1883   // ADD R4, R2, R3
 0403   // BRz #3
 1B41   // ADD R5, R5, R1
-16E1   // ADD R3, R3, -1
+16E1   // ADD R3, R3, 1
 C180   // JMP R6
 C1C0   // RET
 0001   // 0001
