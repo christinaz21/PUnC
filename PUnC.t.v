@@ -220,7 +220,7 @@ module PUnCTATest;
 		// ADD YOUR TEST HERE!
 		`START_TEST("mytest");
 		`WAIT_PC_FREEZE;
-		`ASSERT_REG_EQ(15, 16'd1);
+		`ASSERT_REG_EQ(0, 16'd1);
 		// `ASSERT_REG_EQ(1, 16'd3);
 		// `ASSERT_MEM_EQ(23, 16'd3);
 
