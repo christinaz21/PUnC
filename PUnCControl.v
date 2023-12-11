@@ -147,9 +147,10 @@ module PUnCControl(
 		case (state)
 			STATE_FETCH: begin
 				IR_ld = 1;
-				PC_inc = 1; 
+				
 			end
 			STATE_DECODE: begin
+				PC_inc = 1; 
 				// ARE TEHRE ANY CHNAGES HERE?
 			end
 			STATE_EXECUTE_1: begin
