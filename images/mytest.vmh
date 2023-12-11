@@ -1,17 +1,17 @@
 200E   // LD R0, #14
+1C69   // ADD R6, R1, 9
 0403   // BRz #3
 923F   // NOT R1, R0
-4806   // JSR 6
-3600   // ST #11, R0
+4802   // JSR 6
+3A0C   // ST R5, 12
 F000   // HALT
-943F   // NOT R2, R0
-5480   // AND R2, R2, R0
-2600   // LD R3, R0
-0404   // BRz #4
-1481   // ADD R2, R2, R1
-16C7   // ADD R3, R3, -1
-C140   // JMP #-3
-3400   // ST R2, R0
+943F   // NOT R2, R0    // R2 == - R0
+14A1   // ADD R2, R2, #1
+1883   // ADD R4, R2, R3
+0403   // BRz #3
+1B41   // ADD R5, R5, R1
+16E1   // ADD R3, R3, -1
+C180   // JMP R6
 C1C0   // RET
 0001   // 0001
 0000   // 0000

@@ -221,8 +221,9 @@ module PUnCTATest;
 		`START_TEST("mytest");
 		`WAIT_PC_FREEZE;
 		`ASSERT_REG_EQ(0, 16'd1);
-		// `ASSERT_REG_EQ(1, 16'd3);
-		// `ASSERT_MEM_EQ(23, 16'd3);
+		`ASSERT_REG_EQ(1, 16'hFFFE);
+		`ASSERT_REG_EQ(5, 16'hFFFE);
+		`ASSERT_MEM_EQ(18, 16'hFFFE);
 
 		$display("\n----------------------------");
 		$display("--- Completed %d Tests  ----", test_cnt);
